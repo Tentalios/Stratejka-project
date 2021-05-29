@@ -22,17 +22,19 @@ var cellHeight = 60;	// Высота тайла.
 canvas.width = 12*cellWidth;	// Задание ширины поля.
 canvas.height = 12*cellHeight;	// Задание высоты поля.
 
-var cellArray = [];	// Двумерный массив тайлов.
+var cellArray = [];			// Двумерный массив тайлов.
+
+var stepCellArray = [];	// Массив 
 
 var playerTurn = "left";	// Переменная содержащая информацию о том, чей ход.
 
-var selectedUnitMenu = "";	// Имя выбранного в меню покупки юнита 
+var selectedUnitMenu = "cursor";	// Имя выбранного в меню покупки юнита 
 
 var leftPlayerUnitsArray = [];	// Список юнитов левого игрока
 var rightPlayerUnitsArray = [];	// Список юнитов правого игрока
 
 var leftPlayerMoney = 1000;
-var rightPlayerMoney = 1000;
+var rightPlayerMoney = 950;
 
 var leftPlayerHealth = 1000;
 var rightPlayerHealth = 1000;
@@ -45,6 +47,8 @@ var rightPlayerHealth = 1000;
 
 var cellGrass = new Image();
 cellGrass.src = "assets/images/tiles/grass.png";
+var cellSand = new Image();
+cellSand.src = "assets/images/tiles/sand.png";
 
 ////
 
@@ -63,7 +67,7 @@ var unitsArray = {
 	rat:{
 		health: 100,
 		damage: 20,
-		speed: 2,
+		speed: 3,
 		range: 2,
 		price: 50,
 		leftImage: leftRat,
@@ -95,17 +99,19 @@ for (var cellX = 0; cellX<canvas.width/cellWidth; cellX++) {
 
 function takeTurn(player){
 	units.removeClass("select_unit");
-	selectedUnitMenu = "";
+	selectedUnitMenu = "cursor";
 	switch(player){
 		case "leftTurnEnd":
 			playerTurn = "right";
 			leftPlayerMenu.addClass("non-display");
 			rightPlayerMenu.removeClass("non-display");
+			rightPlayerMoney += 50;
 			break;
 		case "rightTurnEnd":
 			playerTurn = "left";
 			rightPlayerMenu.addClass("non-display");
 			leftPlayerMenu.removeClass("non-display");
+			leftPlayerMoney += 50;
 			break;
 	}
 }
@@ -128,6 +134,35 @@ function selectUnitMenu(unitName){
 
 ////
 
+//// Вычисление разрешённых клеток для юнита
+
+function getStepCells(unit){
+	if(unit.length>0){
+		for (var step = unit[0].speed; step>=0; step--) {
+			for (var i = step; i>0; i--){
+				stepCellArray.push({
+					x:(unit[0].cellX-step+i)*cellWidth,
+					y:(unit[0].cellY+i)*cellHeight
+				});
+				stepCellArray.push({
+					x:(unit[0].cellX+step-i)*cellWidth,
+					y:(unit[0].cellY-i)*cellHeight
+				});
+				stepCellArray.push({
+					x:(unit[0].cellX+i)*cellWidth,
+					y:(unit[0].cellY+step-i)*cellHeight
+				});
+				stepCellArray.push({
+					x:(unit[0].cellX-i)*cellWidth,
+					y:(unit[0].cellY-step+i)*cellHeight
+				});
+			}
+		}
+	}
+}
+
+////
+
 //// Обработка нажатия по полю
 
 function getCursorPosition(canvas, event) {
@@ -141,51 +176,69 @@ function getCursorPosition(canvas, event) {
 	}
 	if(event.which==1) // левый клик
 	{ 
-		// Высадка юнитов на поле
 
-			if(selectedUnitMenu != ""){
-				switch(playerTurn){
-					case "right":
-						if(rightPlayerMoney>=unitsArray[selectedUnitMenu].price){
-							rightPlayerUnitsArray.push({
-								x: cursorX,
-								y: cursorY,
-								cellX: cursorX/cellWidth,
-								cellY: cursorY/cellHeight,
-								type: selectedUnitMenu,
-								maxHealth: unitsArray[selectedUnitMenu].health,
-								currentHealth: unitsArray[selectedUnitMenu].health,
-								damage: unitsArray[selectedUnitMenu].damage,
-								speed: unitsArray[selectedUnitMenu].speed,
-								range: unitsArray[selectedUnitMenu].range,
-								img: unitsArray[selectedUnitMenu].rightImage,
-								turn: 0
+			switch(selectedUnitMenu){
+				case "cursor":
+					switch(playerTurn){
+						case "right":
+							var check_unit = rightPlayerUnitsArray.filter(function(e){
+								return e.x==cursorX && e.y==cursorY;
 							});
-							rightPlayerMoney-=unitsArray[selectedUnitMenu].price;
-						}
-						break;
-					case "left":
-						if(leftPlayerMoney>=unitsArray[selectedUnitMenu].price){
-							leftPlayerUnitsArray.push({
-								x: cursorX,
-								y: cursorY,
-								cellX: cursorX/cellWidth,
-								cellY: cursorY/cellHeight,
-								type: selectedUnitMenu,
-								maxHealth: unitsArray[selectedUnitMenu].health,
-								currentHealth: unitsArray[selectedUnitMenu].health,
-								damage: unitsArray[selectedUnitMenu].damage,
-								speed: unitsArray[selectedUnitMenu].speed,
-								range: unitsArray[selectedUnitMenu].range,
-								img: unitsArray[selectedUnitMenu].leftImage,
-								turn: 0
+							getStepCells(check_unit);
+							break;
+						case "left":
+							var check_unit = leftPlayerUnitsArray.filter(function(e){
+								return e.x==cursorX && e.y==cursorY;
 							});
-							leftPlayerMoney-=unitsArray[selectedUnitMenu].price;
-						}
-						break;
-				}
+							getStepCells(check_unit);
+							break;
+					}
+					break;
+
+		// Высадка юнитов на поле	
+				default:
+					switch(playerTurn){
+						case "right":
+							if(rightPlayerMoney>=unitsArray[selectedUnitMenu].price){
+								rightPlayerUnitsArray.push({
+									x: cursorX,
+									y: cursorY,
+									cellX: cursorX/cellWidth,
+									cellY: cursorY/cellHeight,
+									type: selectedUnitMenu,
+									maxHealth: unitsArray[selectedUnitMenu].health,
+									currentHealth: unitsArray[selectedUnitMenu].health,
+									damage: unitsArray[selectedUnitMenu].damage,
+									speed: unitsArray[selectedUnitMenu].speed,
+									range: unitsArray[selectedUnitMenu].range,
+									img: unitsArray[selectedUnitMenu].rightImage,
+									turn: 0
+								});
+								rightPlayerMoney-=unitsArray[selectedUnitMenu].price;
+							}
+							break;
+						case "left":
+							if(leftPlayerMoney>=unitsArray[selectedUnitMenu].price){
+								leftPlayerUnitsArray.push({
+									x: cursorX,
+									y: cursorY,
+									cellX: cursorX/cellWidth,
+									cellY: cursorY/cellHeight,
+									type: selectedUnitMenu,
+									maxHealth: unitsArray[selectedUnitMenu].health,
+									currentHealth: unitsArray[selectedUnitMenu].health,
+									damage: unitsArray[selectedUnitMenu].damage,
+									speed: unitsArray[selectedUnitMenu].speed,
+									range: unitsArray[selectedUnitMenu].range,
+									img: unitsArray[selectedUnitMenu].leftImage,
+									turn: 0
+								});
+								leftPlayerMoney-=unitsArray[selectedUnitMenu].price;
+							}
+							break;
+					}
+					break;
 			}
-
 		//
 	} 
 }
@@ -210,6 +263,11 @@ function game(){
 		});
 	});
 	// 
+	// Отрисовка помеченных тайлов
+	stepCellArray.forEach(function(item){
+		context.drawImage(cellSand, item.x, item.y, cellWidth, cellHeight)
+	});
+	//
 	// Отрисовка юнитов на поле
 	if(leftPlayerUnitsArray.length > 0){
 		leftPlayerUnitsArray.forEach(function(item){
