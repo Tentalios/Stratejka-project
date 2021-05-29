@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Стратежка</title>
+	<link rel="stylesheet" type="text/css" href="assets/styles/style.css">
+	<script type="text/javascript" src="assets/scripts/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="assets/scripts/menu.js"></script>
+</head>
+<body>
+	<div class="menu">
+		<input type="submit" class="play" value="Играть">
+	</div>
+	<div class="game">
+		<section class="player_menu left_player">
+			<section class="unit" name="unit1">
+				<img src="" alt="">
+			</section>
+			<section class="unit" name="unit2">
+				<img src="" alt="">
+			</section>
+			<section class="unit" name="unit3">
+				<img src="" alt="">
+			</section>
+
+			<input type="submit" class="end_turn" name="leftTurnEnd" value="Закончить ход"></input>
+		</section>
+		<canvas id="gameScreen"></canvas>
+		<section class="player_menu right_player non-display">
+			<section class="unit" name="unit1">
+				<img src="" alt="">
+			</section>
+			<section class="unit" name="unit2">
+				<img src="" alt="">
+			</section>
+			<section class="unit" name="unit3">
+				<img src="" alt="">
+			</section>
+
+			<input type="submit" class="end_turn" name="rightTurnEnd" value="Закончить ход"></input>
+		</section>
+	</div>
+	<div class="end_game">
+		
+	</div>
+
+
+	<script type="text/javascript" src="assets/scripts/game.js"></script>
+</body>
+</html>

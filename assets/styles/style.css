@@ -1,0 +1,71 @@
+*{
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+.non-display{
+	display: none;
+}
+body{
+	background: url("../images/background/repeatable-background.jpg");
+	background-size: 5%;
+}
+div.menu{
+	width: 500px;
+	margin: auto;
+	margin-top: 25%;
+}
+
+input.play{
+	width:100px;
+	margin:50px 0;
+	height: 25px;
+	background: black;
+	color: white;
+}
+
+div.game{
+	width: 1000px;
+	height: 720px;
+	background: red;
+	margin:auto;
+	margin-top: 6.25%;
+	display: none;
+}
+div.game canvas{
+	width: 720px;
+	height: 720px;
+	float: left;
+	background: green;
+}
+section.player_menu{
+	width: 280px;
+	height: 720px;
+	float: left;
+}
+section.left_player{
+	background: red;
+}
+section.right_player{
+	background: blue; 
+}
+
+section.unit{
+	width: 180px;
+	height: 180px;
+	padding: 20px 50px;
+	float: left;
+}
+section.unit img{
+	width:180px;
+	height: 160px;
+	float: left;
+}
+
+.select_unit{
+	background: #F092DF;
+}
+
+input.end_turn{
+
+}
