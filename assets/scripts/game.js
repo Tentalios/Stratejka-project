@@ -39,6 +39,8 @@ var rightPlayerMoney = 950;
 var leftPlayerHealth = 1000;
 var rightPlayerHealth = 1000;
 
+var currentUnit = [];	// Переменнаядля хранения выбранного юнита
+
 ///////////
 
 /////////// Объекты
@@ -60,6 +62,10 @@ var leftRat = new Image();
 leftRat.src="assets/images/units/rat_left.jpg";
 var rightRat = new Image();
 rightRat.src="assets/images/units/rat_right.jpg";
+var leftThiccRat = new Image();
+leftThiccRat.src = "assets/images/units/left_thicc-rat.png";
+var rightThiccRat = new Image();
+rightThiccRat.src = "assets/images/units/right_thicc-rat.png";
 
 //
 
@@ -67,11 +73,20 @@ var unitsArray = {
 	rat:{
 		health: 100,
 		damage: 20,
-		speed: 3,
+		speed: 2,
 		range: 2,
 		price: 50,
 		leftImage: leftRat,
 		rightImage: rightRat
+	},
+	thiccRat:{
+		health: 300,
+		damage: 35,
+		speed: 1,
+		range: 1,
+		price: 150,
+		leftImage: leftThiccRat,
+		rightImage: rightThiccRat
 	}
 };
 
@@ -106,12 +121,14 @@ function takeTurn(player){
 			leftPlayerMenu.addClass("non-display");
 			rightPlayerMenu.removeClass("non-display");
 			rightPlayerMoney += 50;
+			currentUnit = [];
 			break;
 		case "rightTurnEnd":
 			playerTurn = "left";
 			rightPlayerMenu.addClass("non-display");
 			leftPlayerMenu.removeClass("non-display");
 			leftPlayerMoney += 50;
+			currentUnit = [];
 			break;
 	}
 }
@@ -137,6 +154,7 @@ function selectUnitMenu(unitName){
 //// Вычисление разрешённых клеток для юнита
 
 function getStepCells(unit){
+	currentUnit = unit;
 	if(unit.length>0){
 		for (var step = unit[0].speed; step>=0; step--) {
 			for (var i = step; i>0; i--){
@@ -176,21 +194,66 @@ function getCursorPosition(canvas, event) {
 	}
 	if(event.which==1) // левый клик
 	{ 
-
 			switch(selectedUnitMenu){
 				case "cursor":
 					switch(playerTurn){
 						case "right":
-							var check_unit = rightPlayerUnitsArray.filter(function(e){
-								return e.x==cursorX && e.y==cursorY;
-							});
-							getStepCells(check_unit);
+								var check_unit = rightPlayerUnitsArray.filter(function(e){
+									return e.x==cursorX && e.y==cursorY;
+								});
+								if(check_unit.length > 0){
+									stepCellArray = [];
+									getStepCells(check_unit);
+								}
+								else if(currentUnit.length>0 && stepCellArray.length>0){
+									var check_step = stepCellArray.filter(function(e){
+										return e.x==cursorX && e.y==cursorY;
+									});
+									if(check_step.length > 0){
+										for(var i = 0; i<rightPlayerUnitsArray.length; i++){
+											if(rightPlayerUnitsArray[i].x == currentUnit[0].x && rightPlayerUnitsArray[i].y == currentUnit[0].y){
+												rightPlayerUnitsArray[i].x = cursorX;
+												rightPlayerUnitsArray[i].y = cursorY;
+												rightPlayerUnitsArray[i].cellX = cursorX/cellWidth;
+												rightPlayerUnitsArray[i].cellY = cursorY/cellHeight;
+											}
+										}
+									}
+									stepCellArray = [];
+								}
+								else{
+									stepCellArray = [];
+								}
 							break;
 						case "left":
-							var check_unit = leftPlayerUnitsArray.filter(function(e){
-								return e.x==cursorX && e.y==cursorY;
-							});
-							getStepCells(check_unit);
+								var check_unit = leftPlayerUnitsArray.filter(function(e){
+									return e.x==cursorX && e.y==cursorY;
+								});
+								if(check_unit.length > 0){
+									stepCellArray = [];
+									getStepCells(check_unit);
+								}
+								else if(currentUnit.length>0 && stepCellArray.length>0){
+									var check_step = stepCellArray.filter(function(e){
+										return e.x==cursorX && e.y==cursorY;
+									});
+									if(check_step.length > 0){
+										for(var i = 0; i<leftPlayerUnitsArray.length; i++){
+											if(leftPlayerUnitsArray[i].x == currentUnit[0].x && leftPlayerUnitsArray[i].y == currentUnit[0].y){
+												leftPlayerUnitsArray[i].x = cursorX;
+												leftPlayerUnitsArray[i].y = cursorY;
+												leftPlayerUnitsArray[i].cellX = cursorX/cellWidth;
+												leftPlayerUnitsArray[i].cellY = cursorY/cellHeight;
+											}
+										}
+									}
+									stepCellArray = [];
+									currentUnit = [];
+								}
+								else{
+									stepCellArray = [];
+									currentUnit = [];
+								}
 							break;
 					}
 					break;
