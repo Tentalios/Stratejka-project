@@ -24,7 +24,8 @@ canvas.height = 12*cellHeight;	// Задание высоты поля.
 
 var cellArray = [];			// Двумерный массив тайлов.
 
-var stepCellArray = [];	// Массив 
+var stepCellArray = [];	// Массив тайлов, на которые может сходить юнит за этот ход
+var attackCellArray = [];	// Массив разрешённых к атаке юнитом тайлов за этот ход
 
 var playerTurn = "left";	// Переменная содержащая информацию о том, чей ход.
 
@@ -51,6 +52,8 @@ var cellGrass = new Image();
 cellGrass.src = "assets/images/tiles/grass.png";
 var cellSand = new Image();
 cellSand.src = "assets/images/tiles/sand.png";
+var cellAttack = new Image();
+cellAttack.src = "assets/images/tiles/attack.png";
 
 ////
 
@@ -69,6 +72,7 @@ rightThiccRat.src = "assets/images/units/right_thicc-rat.png";
 
 //
 
+// Список юнитов
 var unitsArray = {
 	rat:{
 		health: 100,
@@ -89,6 +93,7 @@ var unitsArray = {
 		rightImage: rightThiccRat
 	}
 };
+//
 
 ////
 
@@ -122,6 +127,16 @@ function takeTurn(player){
 			rightPlayerMenu.removeClass("non-display");
 			rightPlayerMoney += 50;
 			currentUnit = [];
+			stepCellArray = [];
+			attackCellArray = [];
+			leftPlayerUnitsArray.forEach(function(item){
+				item.turnStep = 0;
+				item.turnAtack = 0;
+			});
+			rightPlayerUnitsArray.forEach(function(item){
+				item.turnStep = 1;
+				item.turnAtack = 1;
+			});
 			break;
 		case "rightTurnEnd":
 			playerTurn = "left";
@@ -129,6 +144,16 @@ function takeTurn(player){
 			leftPlayerMenu.removeClass("non-display");
 			leftPlayerMoney += 50;
 			currentUnit = [];
+			stepCellArray = [];
+			attackCellArray = [];
+			rightPlayerUnitsArray.forEach(function(item){
+				item.turnStep = 0;
+				item.turnAtack = 0;
+			});
+			leftPlayerUnitsArray.forEach(function(item){
+				item.turnStep = 1;
+				item.turnAtack = 1;
+			});
 			break;
 	}
 }
@@ -155,7 +180,7 @@ function selectUnitMenu(unitName){
 
 function getStepCells(unit){
 	currentUnit = unit;
-	if(unit.length>0){
+	if(unit.length>0 && unit[0].turnStep == 1){
 		for (var step = unit[0].speed; step>=0; step--) {
 			for (var i = step; i>0; i--){
 				stepCellArray.push({
@@ -177,6 +202,78 @@ function getStepCells(unit){
 			}
 		}
 	}
+}
+
+////
+
+//// Вычисление атакуемых юнитом клеток
+
+function getAttackCells(){
+	if(currentUnit.length > 0 && currentUnit[0].turnAtack == 1){
+		switch(playerTurn){
+			case "left":
+				rightPlayerUnitsArray.forEach(function(item){
+					if(Math.pow((currentUnit[0].cellX - item.cellX),2) + Math.pow((currentUnit[0].cellY - item.cellY),2) <= Math.pow(currentUnit[0].range, 2)){
+						attackCellArray.push({
+							x:item.x,
+							y:item.y
+						});
+					}
+				});
+				break;
+			case "right":
+				leftPlayerUnitsArray.forEach(function(item){
+					if(Math.pow((currentUnit[0].cellX - item.cellX),2) + Math.pow((currentUnit[0].cellY - item.cellY),2) <= Math.pow(currentUnit[0].range, 2)){
+						attackCellArray.push({
+							x:item.x,
+							y:item.y
+						});
+					}
+				});
+				break;
+		}
+	}
+}
+
+////
+
+//// Передвижение юнитов
+
+function unitMove(currentUnitArray){
+	currentUnitArray.forEach(function(item){
+		if(item.x == currentUnit[0].x && item.y == currentUnit[0].y){
+			item.x = cursorX;
+			item.y = cursorY;
+			item.cellX = cursorX/cellWidth;
+			item.cellY = cursorY/cellHeight;
+			item.turnStep = 0;
+		}
+	});
+}
+
+////
+
+//// Атака юнитов
+
+function unitAttack(currentUnitArray){
+	var negativeHealth = 0;
+	for(var i = 0; i<currentUnitArray.length; i++){
+		if(currentUnit[0].turnAtack == 1 && currentUnitArray[i].x == cursorX && currentUnitArray[i].y == cursorY){
+			currentUnitArray[i].currentHealth-=currentUnit[0].damage*currentUnit.length;
+			if(negativeHealth>0){
+				var currentHealth = currentUnitArray[i].currentHealth;
+				currentUnitArray[i].currentHealth+=negativeHealth;
+				negativeHealth+=currentHealth;
+			}
+			currentUnit.forEach(function(item){
+				item.turnAtack = 0;
+			});
+		}
+		if(currentUnitArray[i].currentHealth<=0){
+			negativeHealth+=currentUnitArray[i].currentHealth;
+			currentUnitArray.splice(i,1);
+		}
+	};
 }
 
 ////
@@ -203,26 +300,38 @@ function getCursorPosition(canvas, event) {
 								});
 								if(check_unit.length > 0){
 									stepCellArray = [];
+									attackCellArray = [];
 									getStepCells(check_unit);
+									getAttackCells();
 								}
-								else if(currentUnit.length>0 && stepCellArray.length>0){
-									var check_step = stepCellArray.filter(function(e){
-										return e.x==cursorX && e.y==cursorY;
-									});
-									if(check_step.length > 0){
-										for(var i = 0; i<rightPlayerUnitsArray.length; i++){
-											if(rightPlayerUnitsArray[i].x == currentUnit[0].x && rightPlayerUnitsArray[i].y == currentUnit[0].y){
-												rightPlayerUnitsArray[i].x = cursorX;
-												rightPlayerUnitsArray[i].y = cursorY;
-												rightPlayerUnitsArray[i].cellX = cursorX/cellWidth;
-												rightPlayerUnitsArray[i].cellY = cursorY/cellHeight;
-											}
+								else if(currentUnit.length>0){
+									if(attackCellArray.length > 0){
+										var check_attack = attackCellArray.filter(function(e){
+											return e.x==cursorX && e.y==cursorY;
+										});
+										if(check_attack.length > 0){
+											unitAttack(leftPlayerUnitsArray);
+										}
+									}
+									if(stepCellArray.length > 0){
+										var check_step = stepCellArray.filter(function(e){
+											return e.x==cursorX && e.y==cursorY;
+										});
+										var check_enemy = leftPlayerUnitsArray.filter(function(e){
+											return e.x==cursorX && e.y==cursorY;
+										});
+										if(check_step.length > 0 && check_enemy.length == 0){
+											unitMove(rightPlayerUnitsArray);
 										}
 									}
 									stepCellArray = [];
+									currentUnit = [];
+									attackCellArray = [];
 								}
 								else{
 									stepCellArray = [];
+									currentUnit = [];
+									attackCellArray = [];
 								}
 							break;
 						case "left":
@@ -232,27 +341,36 @@ function getCursorPosition(canvas, event) {
 								if(check_unit.length > 0){
 									stepCellArray = [];
 									getStepCells(check_unit);
+									getAttackCells();
 								}
-								else if(currentUnit.length>0 && stepCellArray.length>0){
-									var check_step = stepCellArray.filter(function(e){
-										return e.x==cursorX && e.y==cursorY;
-									});
-									if(check_step.length > 0){
-										for(var i = 0; i<leftPlayerUnitsArray.length; i++){
-											if(leftPlayerUnitsArray[i].x == currentUnit[0].x && leftPlayerUnitsArray[i].y == currentUnit[0].y){
-												leftPlayerUnitsArray[i].x = cursorX;
-												leftPlayerUnitsArray[i].y = cursorY;
-												leftPlayerUnitsArray[i].cellX = cursorX/cellWidth;
-												leftPlayerUnitsArray[i].cellY = cursorY/cellHeight;
-											}
+								else if(currentUnit.length>0){
+									if(attackCellArray.length > 0){
+										var check_attack = attackCellArray.filter(function(e){
+											return e.x==cursorX && e.y==cursorY;
+										});
+										if(check_attack.length > 0){
+											unitAttack(rightPlayerUnitsArray);
+										}
+									}
+									if(stepCellArray.length > 0){
+										var check_step = stepCellArray.filter(function(e){
+											return e.x==cursorX && e.y==cursorY;
+										});
+										var check_enemy = rightPlayerUnitsArray.filter(function(e){
+											return e.x==cursorX && e.y==cursorY;
+										});
+										if(check_step.length > 0 && check_enemy.length == 0){
+											unitMove(leftPlayerUnitsArray);
 										}
 									}
 									stepCellArray = [];
 									currentUnit = [];
+									attackCellArray = [];
 								}
 								else{
 									stepCellArray = [];
 									currentUnit = [];
+									attackCellArray = [];
 								}
 							break;
 					}
@@ -275,7 +393,8 @@ function getCursorPosition(canvas, event) {
 									speed: unitsArray[selectedUnitMenu].speed,
 									range: unitsArray[selectedUnitMenu].range,
 									img: unitsArray[selectedUnitMenu].rightImage,
-									turn: 0
+									turnStep: 0,
+									turnAtack: 0
 								});
 								rightPlayerMoney-=unitsArray[selectedUnitMenu].price;
 							}
@@ -294,7 +413,8 @@ function getCursorPosition(canvas, event) {
 									speed: unitsArray[selectedUnitMenu].speed,
 									range: unitsArray[selectedUnitMenu].range,
 									img: unitsArray[selectedUnitMenu].leftImage,
-									turn: 0
+									turnStep: 0,
+									turnAtack: 0
 								});
 								leftPlayerMoney-=unitsArray[selectedUnitMenu].price;
 							}
@@ -340,6 +460,13 @@ function game(){
 	if(rightPlayerUnitsArray.length > 0){
 		rightPlayerUnitsArray.forEach(function(item){
 			context.drawImage(item.img, item.x, item.y, cellWidth, cellHeight);
+		});
+	}
+	//
+	// Отрисовка атакуемых юнитов
+	if(attackCellArray.length > 0){
+		attackCellArray.forEach(function(item){
+			context.drawImage(cellAttack, item.x, item.y, cellWidth, cellHeight);
 		});
 	}
 	//
