@@ -77,7 +77,7 @@ var unitsArray = {
 	rat:{
 		health: 100,
 		damage: 20,
-		speed: 2,
+		speed: 3,
 		range: 2,
 		price: 50,
 		leftImage: leftRat,
@@ -86,7 +86,7 @@ var unitsArray = {
 	thiccRat:{
 		health: 300,
 		damage: 35,
-		speed: 1,
+		speed: 2,
 		range: 1,
 		price: 150,
 		leftImage: leftThiccRat,
@@ -240,14 +240,13 @@ function getAttackCells(){
 //// Передвижение юнитов
 
 function unitMove(currentUnitArray){
-	currentUnitArray.forEach(function(item){
-		if(item.x == currentUnit[0].x && item.y == currentUnit[0].y){
+	currentUnit.forEach(function(item){
 			item.x = cursorX;
 			item.y = cursorY;
 			item.cellX = cursorX/cellWidth;
 			item.cellY = cursorY/cellHeight;
 			item.turnStep = 0;
-		}
+			console.log("Юнит сходил");
 	});
 }
 
@@ -257,23 +256,30 @@ function unitMove(currentUnitArray){
 
 function unitAttack(currentUnitArray){
 	var negativeHealth = 0;
-	for(var i = 0; i<currentUnitArray.length; i++){
-		if(currentUnit[0].turnAtack == 1 && currentUnitArray[i].x == cursorX && currentUnitArray[i].y == cursorY){
-			currentUnitArray[i].currentHealth-=currentUnit[0].damage*currentUnit.length;
-			if(negativeHealth>0){
-				var currentHealth = currentUnitArray[i].currentHealth;
-				currentUnitArray[i].currentHealth+=negativeHealth;
-				negativeHealth+=currentHealth;
+	for(var i = currentUnitArray.length-1; i>=0; i--){
+		if(currentUnitArray[i].x == cursorX && currentUnitArray[i].y == cursorY){
+			console.log("Урон прошёл");
+			if(currentUnit[0].turnAtack == 1){
+				currentUnitArray[i].currentHealth-=currentUnit[0].damage*currentUnit.length;
+				currentUnit.forEach(function(item){
+					item.turnAtack = 0;
+				});
 			}
-			currentUnit.forEach(function(item){
-				item.turnAtack = 0;
-			});
+			if(negativeHealth<=0){
+				var currentHealth = currentUnitArray[i].currentHealth;
+				console.log(currentHealth);
+				currentUnitArray[i].currentHealth+=negativeHealth;
+				console.log(currentUnitArray[i].currentHealth);
+				negativeHealth+=currentHealth;
+				console.log(negativeHealth);
+			}
 		}
 		if(currentUnitArray[i].currentHealth<=0){
-			negativeHealth+=currentUnitArray[i].currentHealth;
+			console.log("Вошел");
+			console.log(negativeHealth);
 			currentUnitArray.splice(i,1);
 		}
-	};
+	}
 }
 
 ////
@@ -320,7 +326,10 @@ function getCursorPosition(canvas, event) {
 										var check_enemy = leftPlayerUnitsArray.filter(function(e){
 											return e.x==cursorX && e.y==cursorY;
 										});
-										if(check_step.length > 0 && check_enemy.length == 0){
+										var check_other_units = rightPlayerUnitsArray.filter(function(e){
+											return e.x==cursorX && e.y==cursorY && e.type != currentUnit[0].type;
+										});
+										if(check_step.length > 0 && check_enemy.length == 0 && check_other_units == 0){
 											unitMove(rightPlayerUnitsArray);
 										}
 									}
@@ -359,7 +368,10 @@ function getCursorPosition(canvas, event) {
 										var check_enemy = rightPlayerUnitsArray.filter(function(e){
 											return e.x==cursorX && e.y==cursorY;
 										});
-										if(check_step.length > 0 && check_enemy.length == 0){
+										var check_other_units = leftPlayerUnitsArray.filter(function(e){
+											return e.x==cursorX && e.y==cursorY && e.type != currentUnit[0].type;
+										});
+										if(check_step.length > 0 && check_enemy.length == 0 && check_other_units == 0){
 											unitMove(leftPlayerUnitsArray);
 										}
 									}
@@ -380,7 +392,13 @@ function getCursorPosition(canvas, event) {
 				default:
 					switch(playerTurn){
 						case "right":
-							if(rightPlayerMoney>=unitsArray[selectedUnitMenu].price){
+							var check_other_units = rightPlayerUnitsArray.filter(function(e){
+								return e.x==cursorX && e.y==cursorY && e.type != selectedUnitMenu;
+							});
+							var check_enemy = leftPlayerUnitsArray.filter(function(e){
+								return e.x==cursorX && e.y==cursorY;
+							});
+							if(rightPlayerMoney>=unitsArray[selectedUnitMenu].price && check_other_units.length == 0 && check_enemy == 0 && cursorX >= canvas.width-2*cellWidth){
 								rightPlayerUnitsArray.push({
 									x: cursorX,
 									y: cursorY,
@@ -400,7 +418,13 @@ function getCursorPosition(canvas, event) {
 							}
 							break;
 						case "left":
-							if(leftPlayerMoney>=unitsArray[selectedUnitMenu].price){
+							var check_other_units = leftPlayerUnitsArray.filter(function(e){
+								return e.x==cursorX && e.y==cursorY && e.type != selectedUnitMenu;
+							});
+							var check_enemy = rightPlayerUnitsArray.filter(function(e){
+								return e.x==cursorX && e.y==cursorY;
+							});
+							if(leftPlayerMoney>=unitsArray[selectedUnitMenu].price && check_other_units.length == 0 && check_enemy == 0 && cursorX <= cellWidth){
 								leftPlayerUnitsArray.push({
 									x: cursorX,
 									y: cursorY,
@@ -439,6 +463,8 @@ canvas.addEventListener('mousedown', function(e) {
 /////// Игра
 
 function game(){
+	context.fillStyle = "#ffc0cb"; //Цвет текста в игре
+    context.font = "25px Arial"; //Размер и шрифт тектса
 	// Отрисовка тайлов травы
 	cellArray.forEach(function(item){
 		item.forEach(function(item){
@@ -455,11 +481,19 @@ function game(){
 	if(leftPlayerUnitsArray.length > 0){
 		leftPlayerUnitsArray.forEach(function(item){
 			context.drawImage(item.img, item.x, item.y, cellWidth, cellHeight);
+			var stack = leftPlayerUnitsArray.filter(function(e){
+				return e.x == item.x && e.y == item.y;
+			});
+    		context.fillText(stack.length, item.x+cellWidth/2, item.y+cellHeight);
 		});
 	}
 	if(rightPlayerUnitsArray.length > 0){
 		rightPlayerUnitsArray.forEach(function(item){
 			context.drawImage(item.img, item.x, item.y, cellWidth, cellHeight);
+			var stack = rightPlayerUnitsArray.filter(function(e){
+				return e.x == item.x && e.y == item.y;
+			});
+    		context.fillText(stack.length, item.x+cellWidth/2, item.y+cellHeight);
 		});
 	}
 	//
