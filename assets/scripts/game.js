@@ -14,6 +14,8 @@ var endOfTurn = $("input.end_turn");
 
 var units = $("section.unit");
 
+var options = $("div.context_menu_unite li.menu-option");
+
 /////////// Переменные
 
 var cellWidth = 60;		// Ширина тайла.
@@ -459,6 +461,97 @@ canvas.addEventListener('mousedown', function(e) {
 });
 
 ////
+
+
+
+////////////Меню
+///////Меню Объединить
+
+
+const menu = document.querySelector(".context_menu_unite");
+let menuVisible = false;
+
+const toggleMenu = command => {
+  menu.style.display = command === "show" ? "block" : "none";
+  menuVisible = !menuVisible;
+};
+
+const setPosition = ({ top, left }) => {
+  menu.style.left = `${left}px`;
+  menu.style.top = `${top}px`;
+  toggleMenu("show");
+};
+
+window.addEventListener("click", e => {
+  if(menuVisible)toggleMenu("hide");
+});
+
+window.addEventListener("contextmenu", e => {
+  e.preventDefault();
+  const origin = {
+    left: e.pageX,
+    top: e.pageY
+  };
+  const rect = canvas.getBoundingClientRect()
+  selectTowerX = Math.floor((event.clientX - rect.left)/cellWidth)*cellWidth;
+  selectTowerY = Math.floor((event.clientY - rect.top)/cellHeight)*cellHeight;
+  var targetElement = event.target
+  
+  if (targetElement.tagName === "CANVAS") {
+        e.preventDefault();
+        
+        setPosition(origin);
+  }
+
+  return false;
+});
+//////
+///////Меню Разъединить
+
+
+//const menu = document.querySelector(".context_menu_sever");
+//let menuVisible = false;
+//
+//const toggleMenu = command => {
+//  menu.style.display = command === "show" ? "block" : "none";
+//  menuVisible = !menuVisible;
+//};
+//
+//const setPosition = ({ top, left }) => {
+//  menu.style.left = `${left}px`;
+//  menu.style.top = `${top}px`;
+//  toggleMenu("show");
+//};
+//
+//window.addEventListener("click", e => {
+//  if(menuVisible)toggleMenu("hide");
+//});
+//
+//window.addEventListener("contextmenu", e => {
+//  e.preventDefault();
+//  const origin = {
+//    left: e.pageX,
+//    top: e.pageY
+//  };
+//  const rect = canvas.getBoundingClientRect()
+//  selectTowerX = Math.floor((event.clientX - rect.left)/cellWidth)*cellWidth;
+//  selectTowerY = Math.floor((event.clientY - rect.top)/cellHeight)*cellHeight;
+//  var targetElement = event.target
+//  
+//  if (targetElement.tagName === "CANVAS") {
+//        e.preventDefault();
+//        
+//        setPosition(origin);
+//  }
+//
+//  return false;
+//});
+//////
+
+////////////
+
+
+
 
 /////// Игра
 

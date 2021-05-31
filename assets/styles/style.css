@@ -79,3 +79,27 @@ section.info img{
 input.end_turn{
 
 }
+
+.context_menu_unite , .context_menu_sever {
+  width: 120px;
+  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+  background: rgba(255,255,255,0.2);
+  position: absolute;
+  display: none;
+  border-radius: 20px;
+}
+.menu-options {
+    list-style: none;
+    padding: 10px 0;
+
+}
+.menu-option {
+      font-weight: 500;
+      font-size: 20px;
+      padding: 10px 40px 10px 20px;
+      cursor: pointer;
+}
+.menu-option:hover {
+        background: rgba(0, 0, 0, 0.2);
+}
+
