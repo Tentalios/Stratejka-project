@@ -25,22 +25,22 @@ input.play{
 }
 
 div.game{
-	width: 1000px;
-	height: 720px;
-	background: red;
+	width: 1120px;
+	height: 550px;
+/*	background: red;*/
 	margin:auto;
 	margin-top: 6.25%;
 	display: none;
 }
 div.game canvas{
-	width: 720px;
-	height: 720px;
+	width: 750px;
+	height: 390px;
 	float: left;
 	background: green;
 }
 section.player_menu{
 	width: 280px;
-	height: 720px;
+	height: 550px;
 	float: left;
 }
 section.left_player{
@@ -57,9 +57,10 @@ section.unit{
 	float: left;
 }
 section.unit img{
-	width:120px;
-	height: 100px;
+	width:100px;
+	height: 80px;
 	float: left;
+    
 }
 p.info{
 	width: 70px;
@@ -71,7 +72,69 @@ section.info img{
 	width: 50px;
 	height: 50px;
 }
+/*-----------Нижний интерфейс------------*/
+section.bottom_ui{
+	width: 710px;
+	height: 120px;
+	padding: 20px 20px;
+    background: yellow;
+	float: left;
+}
 
+section.info_player{
+	width: 180px;
+	height: 120px;
+	padding: 10px 0px;
+	float: left;
+}
+
+section.info_selected_unit{
+	width: 180px;
+	height: 120px;
+	padding: 10px 10px;
+	float: left;
+}
+
+section.info_selected_unit_img{
+	width: 120px;
+	height: 120px;
+	padding: 10px 10px;
+	float: inherit;
+}
+
+
+
+section.info_selected_unit_img img{
+	width:120px;
+	height: 100px;
+	float: inherit;
+}
+
+
+section.end_step_button{
+	width: 120px;
+	height: 120px;
+	padding: 10px 0px;
+	float: right;
+}
+
+section.end_step_button button{
+      text-decoration: none;
+      display: inline-block;
+      padding: 15px 5px;
+      margin: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 40px 40px red inset, 0 0 0 0 red;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: white;
+      transition: .15s ease-in-out;
+}
+
+section.end_step_button button:hover {
+  box-shadow: 0 0 10px 0 red inset, 0 0 10px 4px red;
+  color: #F137A6
+/*--------------------------*/
 .select_unit{
 	background: #F092DF;
 }
@@ -79,27 +142,3 @@ section.info img{
 input.end_turn{
 
 }
-
-.context_menu_unite , .context_menu_sever {
-  width: 120px;
-  box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
-  background: rgba(255,255,255,0.2);
-  position: absolute;
-  display: none;
-  border-radius: 20px;
-}
-.menu-options {
-    list-style: none;
-    padding: 10px 0;
-
-}
-.menu-option {
-      font-weight: 500;
-      font-size: 20px;
-      padding: 10px 40px 10px 20px;
-      cursor: pointer;
-}
-.menu-option:hover {
-        background: rgba(0, 0, 0, 0.2);
-}
-

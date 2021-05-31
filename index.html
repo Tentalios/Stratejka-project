@@ -30,7 +30,35 @@
 
 			<input type="submit" class="end_turn" name="leftTurnEnd" value="Закончить ход"></input>
 		</section>
-		<canvas id="gameScreen"></canvas>
+		
+		<div class="ui">
+            <canvas id="gameScreen"></canvas>	
+            <section class="bottom_ui">
+
+                <section class="info_player">
+                    <p name="gold_per_tick">Золота за ход:999999</p>
+                    <p name="captured_points">Захвачено точек:999999</p>
+                    <p name="units_on_battleground">Войска:999999</p>
+                </section>
+                
+                 <section class="info_selected_unit_img">
+                    <img src="assets/images/units/rat_left.jpg" alt="selected_unit">
+                </section>
+
+                <section class="info_selected_unit">
+                    <p name="unit_hp">Здоровье:99999</p>
+                    <p name="unit_dmg">Урон:99999</p>
+                    <p name="unit_energy">Энергия:9999</p>
+                </section>
+                
+               
+
+                <section class="end_step_button">
+                    <button>Закончить ход</button>
+                </section>
+            </section>
+        </div>
+		    
 		<section class="player_menu right_player non-display">
 			<section class="info">
 				<img src="assets/images/icons/money.png" alt="money">
@@ -55,18 +83,6 @@
 		
 	</div>
 	
-	<div class="context_menu_unite">
-		  <ul class="menu-options">
-		    <li class="menu-option" name="unite">Объединить</li>
-		  </ul>
-	</div>
-	
-	<div class="context_menu_sever">
-		  <ul class="menu-options">
-		    <li class="menu-option" name="sever">Разъединить</li>
-		  </ul>
-	</div>
-
 
 	<script type="text/javascript" src="assets/scripts/game.js"></script>
 </body>
