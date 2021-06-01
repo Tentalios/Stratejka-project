@@ -26,17 +26,22 @@ input.play{
 
 div.game{
 	width: 1120px;
-	height: 550px;
+	height: 560px;
 /*	background: red;*/
 	margin:auto;
 	margin-top: 6.25%;
 	display: none;
 }
-div.game canvas{
+section.ui canvas{
 	width: 750px;
 	height: 390px;
-	float: left;
+	margin: 0px;
 	background: green;
+}
+section.ui{
+	padding: 0px;
+	width: 750px;
+	float: left;
 }
 section.player_menu{
 	width: 280px;
@@ -51,15 +56,16 @@ section.right_player{
 }
 
 section.unit{
-	width: 120px;
-	height: 120px;
-	padding: 20px 90px;
+	width: 140px;
+	height: 140px;
 	float: left;
+    align-items: center;
 }
 section.unit img{
-	width:100px;
+	width:80px;
 	height: 80px;
 	float: left;
+    margin: 30px 30px;
     
 }
 p.info{
@@ -72,6 +78,9 @@ section.info img{
 	width: 50px;
 	height: 50px;
 }
+section.info {
+    width: 280px;
+}
 /*-----------Нижний интерфейс------------*/
 section.bottom_ui{
 	width: 710px;
@@ -79,6 +88,7 @@ section.bottom_ui{
 	padding: 20px 20px;
     background: yellow;
 	float: left;
+	margin: 0px;
 }
 
 section.info_player{
@@ -134,6 +144,14 @@ section.end_step_button button{
 section.end_step_button button:hover {
   box-shadow: 0 0 10px 0 red inset, 0 0 10px 4px red;
   color: #F137A6
+}
+
+div.section_flexbox{
+    display: flex;
+    height: 540px;
+    width: 280px;
+    flex-wrap: wrap;
+}
 /*--------------------------*/
 .select_unit{
 	background: #F092DF;
