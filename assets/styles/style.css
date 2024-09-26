@@ -25,22 +25,27 @@ input.play{
 }
 
 div.game{
-	width: 1000px;
-	height: 720px;
-	background: red;
+	width: 1120px;
+	height: 560px;
+/*	background: red;*/
 	margin:auto;
 	margin-top: 6.25%;
 	display: none;
 }
-div.game canvas{
-	width: 720px;
-	height: 720px;
-	float: left;
+section.ui canvas{
+	width: 750px;
+	height: 390px;
+	margin: 0px;
 	background: green;
+}
+section.ui{
+	padding: 0px;
+	width: 750px;
+	float: left;
 }
 section.player_menu{
 	width: 280px;
-	height: 720px;
+	height: 550px;
 	float: left;
 }
 section.left_player{
@@ -51,15 +56,17 @@ section.right_player{
 }
 
 section.unit{
-	width: 120px;
-	height: 120px;
-	padding: 20px 90px;
+	width: 140px;
+	height: 140px;
 	float: left;
+    align-items: center;
 }
 section.unit img{
-	width:120px;
-	height: 100px;
+	width:80px;
+	height: 80px;
 	float: left;
+    margin: 30px 30px;
+    
 }
 p.info{
 	width: 70px;
@@ -71,7 +78,81 @@ section.info img{
 	width: 50px;
 	height: 50px;
 }
+section.info {
+    width: 280px;
+}
+/*-----------Нижний интерфейс------------*/
+section.bottom_ui{
+	width: 710px;
+	height: 120px;
+	padding: 20px 20px;
+    background: yellow;
+	float: left;
+	margin: 0px;
+}
 
+section.info_player{
+	width: 180px;
+	height: 120px;
+	padding: 10px 0px;
+	float: left;
+}
+
+section.info_selected_unit{
+	width: 180px;
+	height: 120px;
+	padding: 10px 10px;
+	float: left;
+}
+
+section.info_selected_unit_img{
+	width: 120px;
+	height: 120px;
+	padding: 10px 10px;
+	float: inherit;
+}
+
+
+
+section.info_selected_unit_img img{
+	width:120px;
+	height: 100px;
+	float: inherit;
+}
+
+
+section.end_step_button{
+	width: 120px;
+	height: 120px;
+	padding: 10px 0px;
+	float: right;
+}
+
+section.end_step_button button{
+      text-decoration: none;
+      display: inline-block;
+      padding: 15px 5px;
+      margin: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 40px 40px red inset, 0 0 0 0 red;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: white;
+      transition: .15s ease-in-out;
+}
+
+section.end_step_button button:hover {
+  box-shadow: 0 0 10px 0 red inset, 0 0 10px 4px red;
+  color: #F137A6
+}
+
+div.section_flexbox{
+    display: flex;
+    height: 540px;
+    width: 280px;
+    flex-wrap: wrap;
+}
+/*--------------------------*/
 .select_unit{
 	background: #F092DF;
 }
